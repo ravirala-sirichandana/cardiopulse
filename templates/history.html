@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PulseGuard - Patient History</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f9; text-align: center; padding: 20px; }
+    h2 { color: #2c3e50; }
+    table { margin: auto; border-collapse: collapse; width: 80%; background: white; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #2c3e50; color: white; }
+    tr:nth-child(even) { background: #ecf0f1; }
+    canvas { margin-top: 30px; }
+    a { display: block; margin-top: 20px; text-decoration: none; color: #2980b9; }
+  </style>
+</head>
+<body>
+  <h2>PulseGuard - Patient History</h2>
+
+  <table>
+    <tr>
+      <th>Timestamp</th>
+      <th>Pulse</th>
+      <th>Temperature</th>
+      <th>Oxygen</th>
+      <th>Status</th>
+    </tr>
+    {% for row in records %}
+    <tr>
+      <td>{{ row.Timestamp }}</td>
+      <td>{{ row.Pulse }}</td>
+      <td>{{ row.Temperature }}</td>
+      <td>{{ row.Oxygen }}</td>
+      <td>{{ row.Status }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <canvas id="chart" width="800" height="400"></canvas>
+
+  <a href="/">🏠 Back to Dashboard</a>
+
+  <script>
+    const labels = [{% for row in records %}"{{ row.Timestamp }}",{% endfor %}];
+    const pulseData = [{% for row in records %}{{ row.Pulse }},{% endfor %}];
+    const tempData = [{% for row in records %}{{ row.Temperature }},{% endfor %}];
+    const oxygenData = [{% for row in records %}{{ row.Oxygen }},{% endfor %}];
+
+    const ctx = document.getElementById('chart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          { label: 'Pulse', data: pulseData, borderColor: 'red', fill: false },
+          { label: 'Temperature', data: tempData, borderColor: 'blue', fill: false },
+          { label: 'Oxygen', data: oxygenData, borderColor: 'green', fill: false }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { display: true, title: { display: true, text: 'Time' }},
+          y: { display: true, title: { display: true, text: 'Values' }}
+        }
+      }
+    });
+  </script>
+</body>
+</html>
